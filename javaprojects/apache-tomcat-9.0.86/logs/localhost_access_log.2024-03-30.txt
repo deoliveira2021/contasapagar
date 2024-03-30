@@ -14,3 +14,7 @@
 127.0.0.1 - - [30/Mar/2024:16:11:47 -0300] "GET / HTTP/1.1" 200 11230
 0:0:0:0:0:0:0:1 - - [30/Mar/2024:16:11:57 -0300] "GET /servlet/WEB-INF/classes/helloyou/HelloYou.java HTTP/1.1" 404 694
 0:0:0:0:0:0:0:1 - - [30/Mar/2024:16:12:16 -0300] "GET /servlet/HelloYou?nome=Edvaldo%20Sousa HTTP/1.1" 200 150
+127.0.0.1 - - [30/Mar/2024:16:22:05 -0300] "GET / HTTP/1.1" 200 11230
+0:0:0:0:0:0:0:1 - - [30/Mar/2024:16:22:06 -0300] "GET /servlet/ HTTP/1.1" 404 775
+0:0:0:0:0:0:0:1 - - [30/Mar/2024:16:22:11 -0300] "GET /servlet/Hello HTTP/1.1" 200 126
+0:0:0:0:0:0:0:1 - - [30/Mar/2024:16:22:21 -0300] "GET /servlet/HelloYou?nome=Edvaldo%20Sousa HTTP/1.1" 200 150
