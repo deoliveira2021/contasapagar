@@ -1,0 +1,14 @@
+<html>
+    <body>
+        <ul>
+            {% for credor in credores %}
+            <li>
+                {{credor.cnpj}} -
+                {{credor.nome}} -
+                <a href="/credores/atualizar/{{credor.cnpj}}">Editar</a>
+                <a href="/cedores/delete/{{cnpj}}">Excluir</a>
+            </li>
+            {% endfor%}
+        </ul>
+    </body>
+</html>
