@@ -33,7 +33,7 @@ def consultar():
      credores = Credor.query.all()
      return render_template('consultar_credores.html', credores=credores)
 
-@bp_credores.route('/atualizar/<string:cnpj>', methods=['GET','POST'])
+@bp_credores.route('/editar/<string:cnpj>', methods=['GET','POST'])
 def atualizar(cnpj):
     credor = Credor.query.get(cnpj)
     if request.method =='GET':
