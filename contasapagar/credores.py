@@ -13,18 +13,34 @@ def cadastrar():
     if request.method =='POST':
         cnpj = request.form.get('cnpj')
         nome = request.form.get('nome')
-        nomecontato = request.form.get('contato')
+        
+        #dados do contato
+        nomecontato = request.form.get('nomecontato')
         telefone = request.form.get('telefone')
         whatsapp = request.form.get('whatsapp')
         email = request.form.get('email')
+        #dados do endereço
+        cep = request.form.get('cep')
+        logradouro = request.form.get('logradouro')
+        numero = request.form.get('numero')
+        complemento = request.form.get('complemento')
+        cidade = request.form.get('cidade')
+        uf = request.form.get('uf')
 
+        #salvar dados do endereço
+        endereco = Endereco(cep, logradouro, numero, complemento, cidade, uf)
+        db.session.add(endereco)
+        db.session.commit()
+        ender_cep = endereco.cep
+
+        #salva dados do contato do credor
         contato = Contato(nomecontato,telefone, email, whatsapp)
         db.session.add(contato)
         db.session.commit()
         contatoId = contato.id
 
 
-        credor = Credor(cnpj, nome, contatoId)
+        credor = Credor(cnpj, nome, ender_cep, contatoId)
         db.session.add(credor)
         db.session.commit()
         return redirect('/credores/consultar')
