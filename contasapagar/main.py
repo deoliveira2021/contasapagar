@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, render_template
 from database import db
 from flask_migrate import Migrate
 from credores import bp_credores
@@ -22,6 +22,6 @@ migrate = Migrate(app, db)
 @app.route('/')
 
 def index():
-    return 'Olá'
+    return render_template('index.html')
 
 app.run()

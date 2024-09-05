@@ -1,14 +1,14 @@
-<html>
-    <body>
-        <ul>
-            {% for credor in credores %}
-            <li>
-                {{credor.cnpj}} -
-                {{credor.nome}} -
-                <a href="/credores/editar/{{credor.cnpj}}">Editar</a>
-                <a href="/credores/delete/{{cnpj}}">Excluir</a>
-            </li>
-            {% endfor%}
-        </ul>
-    </body>
-</html>
+{% extends 'base.html'%}
+
+{% block conteudo%}
+    <ul>
+        {% for credor in credores %}
+        <li>
+            {{credor.cnpj}} -
+            {{credor.nome}} -
+            <a href="/credores/editar/{{credor.cnpj}}">Editar</a>
+            <a href="/credores/delete/{{cnpj}}">Excluir</a>
+        </li>
+        {% endfor%}
+    </ul>
+{% endblock %}

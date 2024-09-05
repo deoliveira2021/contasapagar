@@ -1,58 +1,59 @@
-<html>
-	<body>
-		<form method="post", action="/credores/cadastrar">
-			<table>
-				<tr>
-					<td>
-						<div align="center">Cadastro de Credores</div>
-					</td>
-				</tr>
-				<tr>
-					<td>
-						<div>
-							CNPJ: <input type="text" name="cnpj">
-							Nome: <input type="text" name="nome"><br>	
-						</div>
-					</td>
-				</tr>
-				<tr>
-					<td>
-						<div>Endereço:</div>
-						<div>
-							CEP: <input type="text" name="cep">
-							Logradouro: <input type="text" name="logradouro">
-							Numero: <input type="text" name="numero">
-						</div>
-					</td>
-				</tr>
-				<tr>
-					<td>
-						<div>
-							Complemento: <input type="text" name="complemento">
-							Cidade: <input type="text" name="cidade">
-							UF: <input type="text" name="uf">
-						</div>
-					</td>
-				</tr>
-				<tr>
-					<td>
-						<div>Contato:</div>
-						<div>
-							Nome do Contato: <input type="text" name="nomecontato">
-							E-mail: <input type="text" name="email"><br>
-							Telefone: <input type="text" name="telefone"><br>
-							WhatsApp: <input type="text" name="whatsapp">				
-						</div>
-					</td>
-				</tr>
+{% extends 'base.html'%}
+
+{% block conteudo%}
+	<form method="post", action="/credores/cadastrar">
+		<table>
+			<tr>
 				<td>
-					<td>
-						<div align="center">
-							<input type="submit" value="Cadastrar">
-						</div>
-					</td>
+					<div align="center">Cadastro de Credores</div>
 				</td>
-			</table>
-		</form>
-	</body>
-</html>
+			</tr>
+			<tr>
+				<td>
+					<div>
+						CNPJ: <input type="text" name="cnpj">
+						Nome: <input type="text" name="nome"><br>	
+					</div>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<div>Endereço:</div>
+					<div>
+						CEP: <input type="text" name="cep">
+						Logradouro: <input type="text" name="logradouro">
+						Numero: <input type="text" name="numero">
+					</div>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<div>
+						Complemento: <input type="text" name="complemento">
+						Cidade: <input type="text" name="cidade">
+						UF: <input type="text" name="uf">
+					</div>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<div>Contato:</div>
+					<div>
+						Nome do Contato: <input type="text" name="nomecontato">
+						E-mail: <input type="text" name="email"><br>
+						Telefone: <input type="text" name="telefone"><br>
+						WhatsApp: <input type="text" name="whatsapp">				
+					</div>
+				</td>
+			</tr>
+			<td>
+				<td>
+					<div align="center">
+						<input type="submit" value="Cadastrar">
+					</div>
+				</td>
+			</td>
+		</table>
+	</form>
+
+{% endblock %}

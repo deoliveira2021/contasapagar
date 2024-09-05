@@ -17,7 +17,7 @@ class Contato(db.Model):
         self.whatsapp = whatsapp
 
     def __repr__(self):
-        return "Contato: {}".format(self.nome)
+        return "Contato: {} - {} - {} - {}".format(self.nome, self.telefone, self.email, self.whatsapp)
 
 ## Estrutura da tabela de endereço
 class Endereco(db.Model):
@@ -70,6 +70,8 @@ class Conta(db.Model):
     valor = db.Column(db.Double)
     vencimento = db.Column(db.Date)
 
+    credor = db.relationship('Credor', foreign_keys=credor_cnpj)
+
     def __init__(self, descricao, credor_cnpj, valor, vencimento):
         self.descricao = descricao
         self.credor_cnpj = credor_cnpj
@@ -77,7 +79,7 @@ class Conta(db.Model):
         self.vencimento = vencimento
 
     def __repr__(self):
-        return "Conta: {}".format(self.descricao)
+        return "Conta: {} - {}".format(self.descricao, self.credor.nome)
     
 class Pagamento(db.Model):
     __tablename__ ="pagamento"
@@ -95,5 +97,7 @@ class Pagamento(db.Model):
         self.multa = multa
         self.juros = juros
 
+        conta = db.relationship('Conta',foreign_keys=conta_id)
+
     def __repr__(self):
-        return "pagamento: {}".format(self.data_pagamento)    
+        return "Pagamento: {} - {}".format(self.conta.descricao, self.data_pagamento)    

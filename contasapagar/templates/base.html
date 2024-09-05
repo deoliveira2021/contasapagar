@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistema de Controle de Contas a Pagar</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <nav class="dp-menu">
+    <ul>
+      <li><a href="/">Cadastrar</a>
+          <ul>
+            <li><a href="/credores/cadastrar">Credores</a></li>
+            <li><a href="/contas/cadastrar">Contas</a></li>
+            <li><a href="/pagamentos/cadastrar">Pagamentos</a></li>
+          </ul>
+      </li>
+      <li><a href="/">Consultar</a>
+        <ul>
+          <li><a href="/credores/consultar">Credores</a></li>
+          <li><a href="/contas/consultar">Contas</a></li>
+          <li><a href="/pagamentos/consultar">Pagamentos</a></li>
+        </ul>
+      </li>
+      <li><a href="/">Relatórios</a>
+        <ul>
+          <li><a href="/credores/relatorio">Credores</a></li>
+          <li><a href="/contas/relatorio">Contas</a></li>
+          <li><a href="/pagamentos/relatorio">Pagamentos</a></li>
+        </ul>
+      </li>
+    </ul>
+  </nav>
+  {% block conteudo %}
+  {% endblock %}
+  
+</body>
+</html>
