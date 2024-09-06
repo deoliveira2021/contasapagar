@@ -46,3 +46,14 @@
 .dp-menu ul ul li a {
   display: block;
 }
+
+/*acrescentados por mim */
+
+table.full {
+  width: 100%;
+}
+
+/*elimina o sublinhado do link*/
+a {
+  text-decoration: none;
+}

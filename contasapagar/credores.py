@@ -7,8 +7,9 @@ bp_credores = Blueprint("credores", __name__,template_folder="templates")
 
 @bp_credores.route('/cadastrar', methods=['GET','POST'])
 def cadastrar():
+    credores = consultar()
     if request.method =='GET':
-        return render_template('cadastrar_credores.html')
+        return render_template('cadastrar_credores.html', credores=credores)
 
     if request.method =='POST':
         cnpj = request.form.get('cnpj')
@@ -27,33 +28,43 @@ def cadastrar():
         cidade = request.form.get('cidade')
         uf = request.form.get('uf')
 
-        #salvar dados do endereço
-        endereco = Endereco(cep, logradouro, numero, complemento, cidade, uf)
-        db.session.add(endereco)
-        db.session.commit()
-        ender_cep = endereco.cep
+        #Verifica se o CNPJ não existe no banco
+        credor = Credor.query.get(cnpj)
+        if(credor==None):
+            #Faz uma pesquisa no banco pelo cep, se não encontrar, salva os dados do endereço no banco
+            endereco = Endereco.query.get(cep)
+            if (endereco==None):
+                endereco = Endereco(cep, logradouro, numero, complemento, cidade, uf)
+                db.session.add(endereco)
+                db.session.commit()
+            ender_cep = endereco.cep
 
-        #salva dados do contato do credor
-        contato = Contato(nomecontato,telefone, email, whatsapp)
-        db.session.add(contato)
-        db.session.commit()
-        contatoId = contato.id
+            #salva dados do contato do credor
+            contato = Contato(nomecontato,telefone, email, whatsapp)
+            db.session.add(contato)
+            db.session.commit()
+            contatoId = contato.id
 
 
-        credor = Credor(cnpj, nome, ender_cep, contatoId)
-        db.session.add(credor)
-        db.session.commit()
-        return redirect('/credores/consultar')
+            credor = Credor(cnpj, nome, ender_cep, contatoId)
+            db.session.add(credor)
+            db.session.commit()
+
+    credores = consultar()
+    return render_template('cadastrar_credores.html', credores=credores)
+
+        # return redirect('/credores/consultar')
 @bp_credores.route('/consultar')
 def consultar():
      credores = Credor.query.all()
-     return render_template('consultar_credores.html', credores=credores)
+     return credores
+    #  return render_template('consultar_credores.html', credores=credores)
 
 @bp_credores.route('/editar/<string:cnpj>', methods=['GET','POST'])
-def atualizar(cnpj):
+def editar(cnpj):
     credor = Credor.query.get(cnpj)
     if request.method =='GET':
-        return render_template('usuarios_update.html', u = credor)
+        return render_template('editar_credores.html', credor = credor)
     if request.method =='POST':
         nome = request.form.get('nome')
         email = request.form.get('email')
@@ -67,7 +78,7 @@ def atualizar(cnpj):
 def delete(cnpj):
     credor = Credor.query.get(cnpj)
     if request.method =='GET':
-        return render_template('excluir_credores.html', u = credor)
+        return render_template('excluir_credores.html', credor = credor)
     if request.method =='POST':
         db.session.delete(credor)
         db.session.commit()

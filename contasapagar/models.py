@@ -50,16 +50,26 @@ class Credor(db.Model):
     nome = db.Column(db.String(150))
     ender_cep = db.Column(db.String(8),db.ForeignKey("endereco.cep"))
     contato_id = db.Column(db.Integer,db.ForeignKey("contato.id"))
+
+        #usado para recuperar dados da tabela de contatos com o id
+    contato = db.relationship('Contato', foreign_keys=contato_id)
+
+    #usado para recuperar dados da tabela de endereços com o cep
+    endereco = db.relationship('Endereco', foreign_keys=ender_cep)
  
     def __init__(self,cnpj, nome, ender_cep, contato_id):
-    # def __init__(self,cnpj, nome, contato_id):
         self.cnpj = cnpj
         self.nome = nome
         self.ender_cep = ender_cep
         self.contato_id = contato_id
 
     def __repr__(self):
-        return "Credor: {}".format(self.nome)
+        return "Credor: {} ".format(self.nome)
+        # return "Credor: {} - {} - {} - {} - {} - {} - {} - {} - {} - {}".format(self.nome, self.contato.nome, 
+        #                                                          self.contato.telefone, self.contato.email, 
+        #                                                          self.contato.whatsapp,self.endereco.cep, 
+        #                                                          self.endereco.logradouro,self.endereco.numero,
+        #                                                          self.endereco.cidade, self.endereco.uf)
 
 ## Estrutura da tabela de contas a pagar
 class Conta(db.Model):
