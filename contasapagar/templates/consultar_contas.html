@@ -1,0 +1,58 @@
+{% extends 'base.html'%}
+
+{% block conteudo %}
+
+{% block credores %}{% endblock %}
+  <table class="table full" align="center" id="minhaTabela">
+    <thead>
+      <th colspan="13" bgcolor="#6699CC">
+        <div align="center"><font face="Arial" size="4"><b><font color="#FFFFFF">Contas cadastradas</font></b></font></div>
+      </th>
+      <tr bgcolor="cccccc">
+        <th>CREDOR</th>
+        <th>Descrição</th>
+        <th>Valor</th>
+        <th>Vencimento</th>
+        <th>Valor Pago</th>
+        <th>Data Pto</th>
+        <th>Pago?</th>
+        <th colspan="6">Ações</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for conta in context.contas %}
+        <tr bgcolor="ebebeb">
+          <td align = center >{{ conta.credor.nome }}</td>
+          <td align = center >{{ conta.descricao }}</td>
+          <td align = center >{{ conta.valor }}</td>
+          <td align = center >{{ conta.vencimento }}</td>      
+          <td align = center >{{ conta.pagamentos.valor }}</td>      
+          <td align = center >{{ conta.pagamentos.data_pagamento }}</td>      
+          <td align = center >{{ conta.Pago }}</td>      
+           <td align = center >
+            <a href="/contas/editar/{{conta.id}}"> Editar
+              <i class="fa fa-edit"></i>
+            </a>
+          </td>
+          <td align = center >
+            <a href="/contas/pagar/{{conta.id}}"> Pagar
+              <i class="fa fa-edit"></i>
+            </a>
+          </td>            
+          <td align = center>
+            <a href="/contas/delete/{{conta.id}}" > 
+            <font color = "RED"> Excluir
+              <i class="fa fa-trash"></i>
+            </font>
+            </a>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <script>
+    function handleClick(cb) {
+      display("Clicked, new value = " + cb.checked);
+    }
+  </script>  
+{% endblock %}

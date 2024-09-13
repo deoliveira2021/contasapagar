@@ -4,10 +4,12 @@ from database import db
 class Contato(db.Model):
     __tablename__ = "contato"
     id = db.Column(db.Integer, primary_key=True)
-    nome = db.Column(db.String(150))
-    telefone = db.Column(db.String(11))
-    email = db.Column(db.String(150))
+    nome = db.Column(db.String(150), nullable = False)
+    telefone = db.Column(db.String(11), nullable = False)
+    email = db.Column(db.String(150), nullable = False)
     whatsapp = db.Column(db.String(11))
+
+    credor = db.relationship("Credor", back_populates="contato")
 
 
     def __init__(self, nome, telefone, email, whatsapp):
@@ -22,12 +24,15 @@ class Contato(db.Model):
 ## Estrutura da tabela de endereço
 class Endereco(db.Model):
     __tablename__ = "endereco"
-    cep = db.Column(db.String(8), primary_key=True)
-    logradouro = db.Column(db.String(150))
+    cep = db.Column(db.String(8), primary_key=True, nullable = False)
+    logradouro = db.Column(db.String(150), nullable = False)
     numero = db.Column(db.String(6))
     complemento = db.Column(db.String(50))
-    cidade = db.Column(db.String(150))
-    uf = db.Column(db.String(2))
+    cidade = db.Column(db.String(150), nullable = False)
+    uf = db.Column(db.String(2), nullable = False)
+
+    credor = db.relationship("Credor", back_populates="endereco")
+
 
 
 
@@ -40,47 +45,52 @@ class Endereco(db.Model):
         self.uf = uf
 
     def __repr__(self):
-        return "Endereco: {}".format(self.cep)
+        return "{} - {}".format(self.cep, self.logradouro)
 
     
 ## Estrutura da tabela de credores
 class Credor(db.Model):
     __tablename__ ="credor"
-    cnpj = db.Column(db.String(14), primary_key=True)
-    nome = db.Column(db.String(150))
-    ender_cep = db.Column(db.String(8),db.ForeignKey("endereco.cep"))
+    cnpj = db.Column(db.String(14), primary_key=True, nullable = False)
+    nome = db.Column(db.String(150), nullable = False)
+    ender_cep = db.Column(db.String(8),db.ForeignKey("endereco.cep"), nullable = False)
     contato_id = db.Column(db.Integer,db.ForeignKey("contato.id"))
 
         #usado para recuperar dados da tabela de contatos com o id
-    contato = db.relationship('Contato', foreign_keys=contato_id)
+    contato = db.relationship('Contato', foreign_keys=contato_id, back_populates="credor")
 
     #usado para recuperar dados da tabela de endereços com o cep
-    endereco = db.relationship('Endereco', foreign_keys=ender_cep)
+    endereco = db.relationship('Endereco', foreign_keys=ender_cep, back_populates="credor")
  
-    def __init__(self,cnpj, nome, ender_cep, contato_id):
+    # def __init__(self,cnpj, nome, ender_cep, contato_id):
+    def __init__(self,cnpj, nome, ender_cep):
         self.cnpj = cnpj
         self.nome = nome
         self.ender_cep = ender_cep
-        self.contato_id = contato_id
+        # self.contato_id = contato_id
 
     def __repr__(self):
-        return "Credor: {} ".format(self.nome)
+        # return "{} ".format(self.nome)
+        return "{} {} {}".format(self.nome, self.contato, self.endereco)
         # return "Credor: {} - {} - {} - {} - {} - {} - {} - {} - {} - {}".format(self.nome, self.contato.nome, 
         #                                                          self.contato.telefone, self.contato.email, 
         #                                                          self.contato.whatsapp,self.endereco.cep, 
         #                                                          self.endereco.logradouro,self.endereco.numero,
         #                                                          self.endereco.cidade, self.endereco.uf)
 
+
 ## Estrutura da tabela de contas a pagar
 class Conta(db.Model):
     __tablename__ ="conta"
     id = db.Column(db.Integer, primary_key=True)
-    descricao = db.Column(db.String(150))
+    descricao = db.Column(db.String(150), nullable = False)
     credor_cnpj = db.Column(db.String(14),db.ForeignKey('credor.cnpj'))
     valor = db.Column(db.Double)
     vencimento = db.Column(db.Date)
 
     credor = db.relationship('Credor', foreign_keys=credor_cnpj)
+
+    pagamentos = db.relationship("Pagamento", back_populates="contas")
 
     def __init__(self, descricao, credor_cnpj, valor, vencimento):
         self.descricao = descricao
@@ -89,7 +99,7 @@ class Conta(db.Model):
         self.vencimento = vencimento
 
     def __repr__(self):
-        return "Conta: {} - {}".format(self.descricao, self.credor.nome)
+        return "Conta: {} - {} - {}".format(self.descricao, self.credor.nome, self.vencimento)
     
 class Pagamento(db.Model):
     __tablename__ ="pagamento"
@@ -99,7 +109,9 @@ class Pagamento(db.Model):
     valor = db.Column(db.Double)
     multa = db.Column(db.Double)
     juros = db.Column(db.Double)
-    
+
+    contas = db.relationship("Conta", back_populates="pagamentos")
+   
     def __init__(self, data_pagamento, conta_id, valor, multa,juros):
         self.data_pagamento = data_pagamento
         self.conta_id = conta_id
@@ -111,3 +123,4 @@ class Pagamento(db.Model):
 
     def __repr__(self):
         return "Pagamento: {} - {}".format(self.conta.descricao, self.data_pagamento)    
+  

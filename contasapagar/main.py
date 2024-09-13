@@ -2,6 +2,7 @@ from flask import Flask, render_template
 from database import db
 from flask_migrate import Migrate
 from credores import bp_credores
+from contas import bp_contas
 
 app = Flask(__name__)
 
@@ -14,6 +15,8 @@ app.config["SQLALCHEMY_TRACKMODIFICATIONS"] = False
 db.init_app(app)
 
 app.register_blueprint(bp_credores, url_prefix='/credores')
+app.register_blueprint(bp_contas, url_prefix='/contas')
+
 
 migrate = Migrate(app, db)
 
@@ -24,4 +27,6 @@ migrate = Migrate(app, db)
 def index():
     return render_template('index.html')
 
-app.run()
+# app.run()
+if __name__ == "__main__":
+    app.run(debug=True) #<-- adicionar esta linha
