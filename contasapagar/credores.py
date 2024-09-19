@@ -31,14 +31,14 @@ def cadastrar():
         contato = Contato(nomecontato,telefone,email,whatsapp)
 
         #Verifica se o CNPJ não existe no banco
-        credor = Credor.query.get(cnpj)
-        if (credor==None):
+        localizarCredor = Credor.query.get(cnpj)
+        if (localizarCredor==None):
             credor = Credor(cnpj, nome, cep)
-            credor.contatos = contato
+            credor.contato = contato
 
             #Verifica se o CEP já está cadastrado na tabela de endereços
             if(Endereco.query.get(cep)==None):
-                credor.enderecos = endereco
+                credor.endereco = endereco
             else:
                 credor.ender_cep = cep
 
@@ -89,15 +89,10 @@ def editar(cnpj):
             endereco.uf = uf
         else:
             #atualiza o cep no credor
-
             credor.ender_cep = cep
             #instancia o objeto endereco, com os novos dados
             endereco = Endereco(cep,logradouro,numero,complemento,cidade,uf)
-        
-        #salva no banco os dados do endereço
-        # db.session.add(endereco)
-        # db.session.commit()
-       
+              
         #informações de contato
         nomecontato = request.form.get('nomecontato')
         telefone = request.form.get('telefone')
@@ -109,10 +104,6 @@ def editar(cnpj):
         contato.telefone = telefone
         contato.email = email
         contato.whatsapp = whatsapp
-
-        #salva no banco os dados
-        # db.session.add(contato)
-        # db.session.commit()
 
         #atualiza o nome do credor
         credor.nome = nome

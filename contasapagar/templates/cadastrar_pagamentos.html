@@ -1,0 +1,114 @@
+{% extends 'consultar_contas.html'%}
+
+{% block credores%}
+<form class="pure-form pure-form-aligned" method="post" action="/pagamentos/cadastrar/{{context.conta.id}}">
+  <table class="table full" align="center">
+    <tr bgcolor="#6699CC">
+      <td colspan="40">
+      	<div align="center"><font face="Arial" size="4" color="#FFFFFF"><b>Dados da Conta</b></font></div>
+      </td>
+    </tr>
+    <tr bgcolor="ebebeb">
+      <td colspan="40">
+        <div class="control-group">
+					CNPJ <input type="text" name="cnpj" value="{{context.conta.credor_cnpj}}" readonly>
+          - <input type="text" name="nome" value="{{context.conta.credor.nome}}" readonly>
+          Descrição  <input type="text" name="cep" value="{{context.conta.descricao}}" readonly>
+          Vencimento <input type="date" name="vencimento" value="{{context.conta.vencimento}}" readonly>
+          Valor <input type="currency" name="valor" style="text-align:right" value="{{context.conta.valor}}" readonly disabled>
+        </div>
+      </td>
+		</tr>
+  </table>
+  <table class="table full" align="center" id="tabPagar">
+    <tr bgcolor="#6699CC">
+      <td colspan="40">
+      <div align="center"><font face="Arial" size="4" color="#FFFFFF"><b>Pagamento de Conta</b></font></div>
+    </td>
+    </tr>
+    <tr bgcolor="ebebeb">
+      <td colspan="20" width="70%">
+        <div class="control-group">
+          <!-- Credor <input type="text" id="name" readonly  disabled> -->
+          Data Pagamento <input type="date" name="datapagamento" id="datapagto" required value=TODAY>
+          {%if context.conta.pagamento !=[]%}
+            
+            Juros <input type="text" value="{{context.conta.pagamento[0].juros}}" style="text-align:right">
+            Multa <input type="text" value="{{context.conta.pagamento[0].multa}}" style="text-align:right"> 
+            Total(Valor + Juros + Multa)  <input type="text" value="{{context.conta.pagamento[0].valor}}" name="valor" id="contaValor" style="text-align:right">
+          {%else%}
+            Juros <input type="text" value="" style="text-align:right">
+            Multa <input type="text" value="" style="text-align:right"> 
+            Total(Valor + Juros + Multa)  <input type="text" value="" name="valor" id="contaValor" style="text-align:right">
+        {%endif%}
+
+        </div>
+      </td>      
+      <td colspan="10" width ="15%">
+        <div class="control-group">
+          Valor  <input type="text" min="0.00" name="valor" required format="currency" precision="2" id="contaValor" style="text-align:right">
+        </div>
+      </td>      
+      <td colspan="10" width ="15%">
+        <div class="control-group">
+          Vencimento <input type="date" name="vencimento" format="dd/mm/yyyy" placeholder="DD/MM/YYYY" required>
+        </div>
+      </td>			
+		</tr>
+  </table>
+
+  <table class="table full" align="center">
+   <tr bgcolor="ebebeb">
+     <td>
+       <div class="controls" align = "center">
+           <button type="submit" class="pure-button pure-button-primary">Salvar</button>
+           <a href="/contas/cadastrar"><input type="button" value="Voltar"></a>
+       </div>
+     </td>
+   </tr>
+  </table>
+  <script>
+  $(document).ready(function() {
+      //Aplica a formatação.
+      $('#tabPagar tr').each(function() {
+        contaValor = Number($("td:eq(3)", this).text()); 
+        pagamentoValor = Number($("td:eq(7)", this).text()); 
+        multa = Number($("td:eq(5)", this).text()); 
+        juros = Number($("td:eq(6)", this).text()); 
+
+        $('td#contaVal', this).text( fmt.format(contaValor) );
+        $('td#pagVal', this).text( fmt.format(pagamentoValor) );
+        $('td#multa', this).text( fmt.format(multa) );
+        $('td#juros', this).text( fmt.format(juros) );
+
+        // Aqui devemos passar a hora 00:00:00 para que a função Date() não decremente o dia, tendo em vista que,
+        // por padrão retorna a data no UTC na hora 00:00:00, como no pt-BR é UTC-3, 
+        // a função Date() faz a subtração de três horas do horário UTC, resultando, pois,
+        // em 21h do dia anterior como resultado da data, sem passar o horário.
+        // Outra forma de obter o mesmo resultado, sem passar a hora 00:00:00,
+        // é ajustando o timeZone para UTC, daí, não vai haver a subtração de três horas na data.
+        datavenc = new Date($("td:eq(2)", this).text()+" 00:00:00"); // Informando a hora 00:00:00       
+        $('td#venc', this).text( dataFormatada.format(datavenc));
+
+        //Como a data do pagamento é preenchida só quando se efetiva o pagamento,
+        //devemos fazer uma verificação se existe a data no campo equivalente,
+        //caso contrário, por encontrar um erro, não será feita a conversão
+        // a partir da linha que deu erro!
+        if ($("td:eq(4)", this).text()!=""){
+          datapagt = new Date($("td:eq(4)", this).text()+" 00:00:00");
+          $('td#dtpag', this).text( dataFormatada.format(datapagt));
+        }
+
+      })
+
+      $('#tabContaEditar ').each(function() {
+        contaValor = Number($("input:eq(1)", this).text()); 
+
+        $('td#contaVal', this).text( fmt.format(contaValor) );
+      })  
+      
+    });         
+  </script>
+</form>
+
+{% endblock %}

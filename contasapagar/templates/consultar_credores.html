@@ -27,14 +27,14 @@
       {% for credor in contexto.credores %}
         <tr bgcolor="ebebeb">
           <td align = center >{{ credor.cnpj }}</td>
-          <td align = center >{{ credor.nome }}</td>
+          <td align = left >{{ credor.nome }}</td>
           <td align = center >{{ credor.endereco.cep }}</td>
-          <td align = center >{{ credor.endereco.logradouro }}</td>
+          <td align = left >{{ credor.endereco.logradouro }}</td>
           <td align = center >{{ credor.endereco.numero }}</td>
-          <td align = center >{{ credor.endereco.cidade }}</td>
+          <td align = left >{{ credor.endereco.cidade }}</td>
           <td align = center >{{ credor.endereco.uf }}</td>
-          <td align = center >{{ credor.contato.nome }}</td>
-          <td align = center >{{ credor.contato.email }}</td>
+          <td align = left >{{ credor.contato.nome }}</td>
+          <td align = left >{{ credor.contato.email }}</td>
           <td align = center >{{ credor.contato.telefone }}</td>
           <td align = center >{{ credor.contato.whatsapp }}</td>
           <td align = center >

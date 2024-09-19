@@ -70,14 +70,7 @@ class Credor(db.Model):
         # self.contato_id = contato_id
 
     def __repr__(self):
-        # return "{} ".format(self.nome)
         return "{} {} {}".format(self.nome, self.contato, self.endereco)
-        # return "Credor: {} - {} - {} - {} - {} - {} - {} - {} - {} - {}".format(self.nome, self.contato.nome, 
-        #                                                          self.contato.telefone, self.contato.email, 
-        #                                                          self.contato.whatsapp,self.endereco.cep, 
-        #                                                          self.endereco.logradouro,self.endereco.numero,
-        #                                                          self.endereco.cidade, self.endereco.uf)
-
 
 ## Estrutura da tabela de contas a pagar
 class Conta(db.Model):
@@ -90,7 +83,7 @@ class Conta(db.Model):
 
     credor = db.relationship('Credor', foreign_keys=credor_cnpj)
 
-    pagamentos = db.relationship("Pagamento", back_populates="contas")
+    pagamento = db.relationship("Pagamento", back_populates="conta")
 
     def __init__(self, descricao, credor_cnpj, valor, vencimento):
         self.descricao = descricao
@@ -99,7 +92,7 @@ class Conta(db.Model):
         self.vencimento = vencimento
 
     def __repr__(self):
-        return "Conta: {} - {} - {}".format(self.descricao, self.credor.nome, self.vencimento)
+        return "Conta: {} - {} - {} ".format(self.descricao, self.credor.nome, self.vencimento)
     
 class Pagamento(db.Model):
     __tablename__ ="pagamento"
@@ -110,17 +103,17 @@ class Pagamento(db.Model):
     multa = db.Column(db.Double)
     juros = db.Column(db.Double)
 
-    contas = db.relationship("Conta", back_populates="pagamentos")
+    conta = db.relationship('Conta', foreign_keys=conta_id, back_populates="pagamento")
    
-    def __init__(self, data_pagamento, conta_id, valor, multa,juros):
-        self.data_pagamento = data_pagamento
+    # def __init__(self, data_pagamento, conta_id, valor, multa,juros):
+    def __init__(self, conta_id, multa,juros):
+        # self.data_pagamento = data_pagamento
         self.conta_id = conta_id
-        self.valor = valor
+        # self.valor = valor
         self.multa = multa
         self.juros = juros
 
-        conta = db.relationship('Conta',foreign_keys=conta_id)
-
     def __repr__(self):
-        return "Pagamento: {} - {}".format(self.conta.descricao, self.data_pagamento)    
+        # return "{},{},{},{},{},{}".format(self.id,self.conta_id, self.conta.descricao, self.data_pagamento, self.multa, self.juros)    
+        return "{},{},{},{},{}".format(self.id,self.conta_id,self.valor, self.multa,self.juros)    
   

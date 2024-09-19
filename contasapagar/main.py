@@ -3,6 +3,7 @@ from database import db
 from flask_migrate import Migrate
 from credores import bp_credores
 from contas import bp_contas
+from pagamento import bp_pagamentos
 
 app = Flask(__name__)
 
@@ -16,6 +17,7 @@ db.init_app(app)
 
 app.register_blueprint(bp_credores, url_prefix='/credores')
 app.register_blueprint(bp_contas, url_prefix='/contas')
+app.register_blueprint(bp_pagamentos, url_prefix='/pagamentos')
 
 
 migrate = Migrate(app, db)
