@@ -106,10 +106,10 @@ class Pagamento(db.Model):
     conta = db.relationship('Conta', foreign_keys=conta_id, back_populates="pagamento")
    
     # def __init__(self, data_pagamento, conta_id, valor, multa,juros):
-    def __init__(self, conta_id, multa,juros):
+    def __init__(self, conta_id, valor, multa,juros):
         # self.data_pagamento = data_pagamento
         self.conta_id = conta_id
-        # self.valor = valor
+        self.valor = valor
         self.multa = multa
         self.juros = juros
 

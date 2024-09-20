@@ -6,6 +6,8 @@ from datetime import datetime, date
 from sqlalchemy import select, insert, delete, update, func
 from credores import consultarCredores
 from dateutil.relativedelta import relativedelta
+from flask_weasyprint import HTML, render_pdf    
+
 
 bp_contas = Blueprint("contas", __name__,template_folder="templates")
 
@@ -39,61 +41,39 @@ def consultarContas():
     contas = Conta.query.all()
     dataAtual = date.today()
     for conta in contas:
-        pagamento = Pagamento.query.all()
-        # for a in range(len(pagamento)): 
-        #     if (conta.id != pagamento[a].conta_id):
-        #         print("Id: ", conta.id, "Pagamento conta id: ", pagamento[a].conta_id)
-        #         print("Não há este id na tabela de pagamentos")
-        #     else:
-        #         print("Enconrou a Conta cujo id é: ", conta.id)
-        if (dataAtual > conta.vencimento):
+        qrPagamento = Pagamento.query.filter_by(conta_id = conta.id)
+        teste = db.session.execute(qrPagamento)
+        pagamento = teste.fetchall()
+
+        atraso = abs(relativedelta(dataAtual,conta.vencimento))
+        diasAtraso = atraso.days
+        if(dataAtual > conta.vencimento):
             multa = conta.valor*2/100 # a multa padrão por atraso é de 2% sobre o valor principal
-            atraso = abs(relativedelta(dataAtual,conta.vencimento))
-            diasAtraso = atraso.days
             juros = conta.valor*(0.01/30)*diasAtraso
-            # print("Dias:", diasAtraso, "Multa:", multa, "Juros:",juros)
+        else:
+            multa = 0.00
+            juros = 0.00
 
-            if  len(pagamento) <= 0 :
-                print("Entro no if len pagamento<=0")
-                pagamento = Pagamento(conta.id, multa, juros)
-                db.session.add(pagamento)
+        valor = conta.valor + juros + multa
+        # print("Dias:", diasAtraso, "Multa:", multa, "Juros:",juros)
+
+        if  len(pagamento) <= 0 :
+            valor = 0.00
+            pagamento = Pagamento(conta.id, valor, multa, juros)
+            db.session.add(pagamento)
+            db.session.commit()
+
+        else:
+            for i in range(len(pagamento)):
+                pagamento = list(pagamento[i])                   
+                if pagamento[i].conta_id == conta.id:
+                    pagamento[i].juros = juros
+                    pagamento[i].multa = multa
+                    if pagamento[i].valor == None:
+                        pagamento[i].valor = 0.00
+                
+                db.session.add(pagamento[i])
                 db.session.commit()
-
-            else:
-                for i in range(len(pagamento)):
-                    if pagamento[i].conta_id == conta.id:
-                        # print(conta)
-                        pagamento[i].juros = juros
-                        pagamento[i].multa = multa
-
-                # for pag in pagamento:
-                #     if pag.conta_id ==conta.id:
-                #         pag.multa = multa
-                #         pag.juros = juros
-                #         print(pag.multa)
-                # return contas, pagamento
-
-    # for conta in contas:
-    #     qrPagamento = Pagamento.query.filter_by(conta_id=conta.id)
-    #     teste = db.session.execute(qrPagamento)
-    #     lista_tupla = teste.fetchone()
-    #     pagamento = list(lista_tupla)
-    #     print("lista: ", lista_tupla)
-    #     if (dataAtual > conta.vencimento):
-    #         multa = conta.valor*2/100 # a multa padrão por atraso é de 2% sobre o valor principal
-    #         atraso = abs(relativedelta(dataAtual,conta.vencimento))
-    #         diasAtraso = atraso.days
-    #         juros = conta.valor*(0.01/30)*diasAtraso
-    #         print("Dias:", diasAtraso, "Multa:", multa, "Juros:",juros)
-    #         if  pagamento == []:
-    #             pagamento = Pagamento(conta.id, multa, juros)
-    #             db.session.add(pagamento)
-    #             db.session.commit()
-
-    #         else:
-    #             # pagamento = Pagamento.query.get(pagamento.id)
-    #             # lista = list(pagamento)
-    #             print(pagamento)       
 
     return contas
 
@@ -139,3 +119,80 @@ def delete(contaId):
         "contas": contas,
     }   
     return render_template('excluir_contas.html', context=contexto)
+
+
+
+@bp_contas.route('/relatoriotodas')
+def imprimirTodas():
+    titulo = "RELATÓRIO DE TODAS AS CONTAS"
+    contas = Conta.query.all()
+    contexto = {
+        "titulo": titulo,
+        "contas": contas
+    }
+    html = render_template('relatoriocontas.html', contexto = contexto)
+
+    return render_pdf(HTML(string=html))
+
+@bp_contas.route('/relatoriopagas')
+def imprimirPagas():
+    pagamento = Pagamento.query.all()
+    titulo = "RELATÓRIO DE TODAS AS CONTAS PAGAS"
+    contas = []
+    for i in range(len(pagamento)):
+        conta = Conta.query.get(pagamento[i].conta_id)
+        if (pagamento[i].valor >= conta.valor):
+            contas.append(conta)
+
+    contexto = {
+        "titulo": titulo,
+        "contas": contas
+    }            
+    html = render_template('relatoriocontas.html', contexto = contexto)
+    return render_pdf(HTML(string=html))
+
+
+@bp_contas.route('/relatoriovencidas')
+def imprimirVencidas():
+    titulo = "RELATÓRIO DE TODAS AS CONTAS VENCIDAS"
+    dataAtual = date.today()
+
+    sqlContas = select(Conta, Pagamento).where(Conta.vencimento < dataAtual).where(Pagamento.valor < Conta.valor).where(Pagamento.conta_id==Conta.id)
+    qrContas  = db.session.execute(sqlContas)
+    novacontas = qrContas.fetchall()
+    print(novacontas)
+    
+    contas = []
+    for i in range((len(novacontas))):
+        conta = list(novacontas[i])
+        contas.append(conta[i])
+
+    contexto = {
+        "titulo": titulo,
+        "contas": contas
+    }            
+    html = render_template('relatoriocontas.html', contexto = contexto)
+    return render_pdf(HTML(string=html))
+
+
+@bp_contas.route('/relatorioavencer')
+def imprimirVencer():
+    titulo = "RELATÓRIO DE TODAS AS CONTAS A VENCER"
+    dataAtual = date.today()
+    # sqlContas = select(Conta, Pagamento).where(Conta.vencimento >= dataAtual).where(Pagamento.valor > Conta.valor)
+    sqlContas = select(Conta).where(Conta.vencimento >= dataAtual) #.where(db.or_(Conta.id == Pagamento.conta_id, Conta.id !=Pagamento.conta_id))
+    qrContas  = db.session.execute(sqlContas)
+    novacontas = qrContas.fetchall() 
+
+    print(novacontas)
+    contas = []
+    for i in range(len(novacontas)):
+        conta = list(novacontas[i])
+        contas.append(conta[i])
+
+    contexto = {
+        "titulo": titulo,
+        "contas": contas
+    }            
+    html = render_template('relatoriocontas.html', contexto = contexto)
+    return render_pdf(HTML(string=html))

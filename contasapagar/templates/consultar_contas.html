@@ -5,7 +5,7 @@
 {% block credores %}{% endblock %}
   <table class="table full" align="center" id="tabContaConsultar">
     <thead>
-      <th colspan="13" bgcolor="#6699CC">
+      <th colspan="15" bgcolor="#6699CC">
         <div align="center"><font face="Arial" size="4"><b><font color="#FFFFFF">Contas cadastradas</font></b></font></div>
       </th>
       <tr bgcolor="cccccc">
@@ -17,6 +17,7 @@
         <th>Multa</th>
         <th>Juros</th>
         <th>Valor Pago</th>
+        <th>Quitado?</th>
         <th colspan="6">Ações</th>
       </tr>
     </thead>
@@ -33,24 +34,42 @@
                   <td id="multa" align = right >{{ pag.multa }}</td>      
                   <td id="juros" align = right >{{ pag.juros }}</td>      
                   <td id="pagVal" align = right >{{ pag.valor }}</td>
+                  {%if pag.valor < conta.valor %}
+                    <td id="quitado" align="center"> Não </td>
+                  {%else%}
+                    <td id="quitado" align="center"> Sim </td>
+                  {%endif%}                  
               {%endfor%}
             {%else%}
               <td id="dtpag" align = center >None</td>      
               <td id="multa" align = right >0.00</td>      
               <td id="juros" align = right >0.00</td>      
               <td id="pagVal" align = right >0.00</td>            
+              <td id="quitado" align="center"> Não </td>
             {%endif%}
-
-            <!-- <td align = center >{{ conta.Pago }}</td>       -->
             <td align = center >
               <a href="/contas/editar/{{conta.id}}"> Editar
                 <i class="fa fa-edit"></i>
               </a>
             </td>
             <td align = center >
-              <a href="/pagamentos/cadastrar/{{conta.id}}"> Pagar
-                <i class="fa fa-edit"></i>
-              </a>
+              {%if conta.pagamento !=[]%}
+                {% for pag in conta.pagamento %}
+                  {%if pag.valor < conta.valor %}
+                    <a href="/pagamentos/cadastrar/{{conta.id}}"> Pagar
+                      <i class="fa fa-edit"></i>
+                    </a> 
+                  {%else%}
+                    <a href=""> Pagar
+                      <i class="fa fa-edit"></i>
+                    </a>                   
+                  {%endif%}
+                {%endfor%}
+             {%else%}             
+                <a href="/pagamentos/cadastrar/{{conta.id}}"> Pagar
+                  <i class="fa fa-edit"></i>
+                </a>
+              {%endif%}
             </td>            
             <td align = center>
               <a href="/contas/delete/{{conta.id}}" > 
@@ -86,8 +105,10 @@
       $('#tabContaConsultar tbody tr').each(function() {
         contaValor = Number($("td:eq(3)", this).text());
       
-        pagamentoValor = 0.00
         if ($("td:eq(7)", this).text()=="NaN"){
+          pagamentoValor = 0.00;
+        }          
+        if ($("td:eq(7)", this).text()!="NaN"){
           pagamentoValor = Number($("td:eq(7)", this).text());
         }           
         multa = Number($("td:eq(5)", this).text()); 

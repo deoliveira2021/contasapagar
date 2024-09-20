@@ -13,14 +13,31 @@ bp_pagamentos = Blueprint("pagamentos", __name__,template_folder="templates")
 @bp_pagamentos.route('/cadastrar/<int:contaId>', methods=['GET','POST'])
 def cadastrar(contaId):
     if request.method =='POST':
-        cnpj = request.form.get('cnpj')
-        descricao = request.form.get('descricao')
-        valor = request.form.get('valor').replace(",", ".")
-        vencimento = datetime.strptime(request.form.get('vencimento'), "%Y-%m-%d")
+        juros = request.form.get('juros').replace(",", ".").strip(" ")
+        juros = juros.replace("R$", "")
 
-        conta = Conta(descricao=descricao, credor_cnpj=cnpj, valor=valor, vencimento=vencimento)
-        db.session.add(conta)
-        db.session.commit()
+        multa = request.form.get('multa').replace(",", ".").strip(" ")
+        multa = multa.replace("R$", "")
+
+        total = request.form.get('total').replace(",", ".").strip(" ")
+        total = total.replace("R$", "")
+        print (juros, multa, total)
+        dataPagamento = datetime.strptime(request.form.get('datapagamento'), "%Y-%m-%d")
+        contaId = contaId
+
+        qrPagamento = Pagamento.query.filter_by(conta_id = contaId)
+        teste = db.session.execute(qrPagamento)
+        pagamento = teste.fetchall()
+        if(pagamento != []):
+            for i in range(len(pagamento)):
+                pagamento = list(pagamento[i])
+                pagamento[i].data_pagamento = dataPagamento
+                pagamento[i].valor = total
+                pagamento[i].multa = multa
+                pagamento[i].juros = juros
+
+                db.session.add(pagamento[i])
+                db.session.commit()
         
     pagamentos = consultarPagamentos()
     credores = consultarCredores()
@@ -36,8 +53,8 @@ def cadastrar(contaId):
 
 @bp_pagamentos.route('/consultar')
 def consultarPagamentos():  
-    contas = Pagamento.query.all()
-    return contas
+    pagamentos = Pagamento.query.all()
+    return pagamentos
 
 @bp_pagamentos.route('/editar/<int:contaId>', methods=['GET','POST'])
 def editar(contaId):
